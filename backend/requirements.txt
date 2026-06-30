@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+SQLAlchemy
+python-jose[cryptography]
+bcrypt
+python-multipart
+psycopg2-binary
+pydantic
