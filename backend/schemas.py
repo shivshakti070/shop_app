@@ -37,19 +37,33 @@ class InventoryOut(InventoryBase):
 
 class DailySaleBase(BaseModel):
     date: str
+
+    inventory_item_id: int
+
     item_name: str
+
+    brand: str
+
     quantity: int
+
     price_per_unit: float
+
     total_amount: float
+
     purchase_rate_at_sale: float = 0.0
+
     payment_method: str = "Cash"
+
     customer_name: Optional[str] = None
+
 
 class DailySaleCreate(DailySaleBase):
     pass
 
+
 class DailySaleOut(DailySaleBase):
     id: int
+
     owner_id: int
 
     class Config:

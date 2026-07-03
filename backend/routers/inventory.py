@@ -27,24 +27,32 @@ def create_inventory_item(item: schemas.InventoryCreate, current_user: models.Us
     if incoming_quantity <= 0:
         raise HTTPException(status_code=400, detail="Quantity must be greater than zero")
 
-    db_item = db.query(models.InventoryItem).filter(
+    existing = db.query(models.InventoryItem).filter(
         models.InventoryItem.owner_id == current_user.id,
         func.lower(models.InventoryItem.item) == item_name.lower(),
         func.lower(models.InventoryItem.brand) == brand_name.lower(),
     ).first()
 
-    if db_item:
-        old_total_value = db_item.initial_quantity * db_item.purchase_rate
-        new_total_value = incoming_quantity * item.purchase_rate
-        new_total_quantity = db_item.initial_quantity + incoming_quantity
+    if existing:
+        total_old_cost = existing.initial_quantity * existing.purchase_rate
+        total_new_cost = incoming_quantity * item.purchase_rate
 
-        db_item.date = item.date
-        db_item.initial_quantity = new_total_quantity
-        db_item.remaining_quantity += incoming_quantity
-        db_item.purchase_rate = (old_total_value + new_total_value) / new_total_quantity
+        new_total_quantity = existing.initial_quantity + incoming_quantity
+
+        weighted_rate = (
+            (total_old_cost + total_new_cost)
+            / new_total_quantity
+        )
+
+        existing.date = item.date
+        existing.initial_quantity = new_total_quantity
+        existing.remaining_quantity += incoming_quantity
+        existing.purchase_rate = round(weighted_rate, 2)
+
         db.commit()
-        db.refresh(db_item)
-        return db_item
+        db.refresh(existing)
+
+        return existing
 
     db_item = models.InventoryItem(
         date=item.date,
@@ -92,6 +100,13 @@ def delete_inventory_item(item_id: int, current_user: models.User = Depends(get_
     db_item = db.query(models.InventoryItem).filter(models.InventoryItem.id == item_id, models.InventoryItem.owner_id == current_user.id).first()
     if not db_item:
         raise HTTPException(status_code=404, detail="Item not found")
+    if db_item.sales:
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot delete this inventory item because sales exist for it."
+       )
+
     db.delete(db_item)
     db.commit()
+
     return {"ok": True}
