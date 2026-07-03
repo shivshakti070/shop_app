@@ -22,7 +22,6 @@ class InventoryBase(BaseModel):
     item: str
     brand: str
     initial_quantity: int
-    remaining_quantity: int
     purchase_rate: float
 
 class InventoryCreate(InventoryBase):
@@ -30,6 +29,7 @@ class InventoryCreate(InventoryBase):
 
 class InventoryOut(InventoryBase):
     id: int
+    remaining_quantity: int
     owner_id: int
 
     class Config:
