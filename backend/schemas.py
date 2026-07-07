@@ -69,6 +69,24 @@ class DailySaleOut(DailySaleBase):
     class Config:
         from_attributes = True
 
+
+class SalesReturnCreate(BaseModel):
+    date: str
+    sale_id: int
+    quantity: int
+    refund_amount: float
+    reason: str | None = None
+
+
+class SalesReturnOut(SalesReturnCreate):
+    id: int
+    inventory_id: int
+    owner_id: int
+
+    class Config:
+        from_attributes = True
+
+
 class DailyExpenseBase(BaseModel):
     date: str
     description: str

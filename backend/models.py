@@ -14,6 +14,7 @@ class User(Base):
 
     items = relationship("InventoryItem", back_populates="owner")
     sales = relationship("DailySale", back_populates="owner")
+    returns = relationship("SalesReturn")
     expenses = relationship("DailyExpense", back_populates="owner")
     investments = relationship("Investment", back_populates="owner")
     one_time_expenses = relationship("OneTimeExpense", back_populates="owner")
@@ -56,6 +57,8 @@ class InventoryItem(Base):
 
     sales = relationship("DailySale", back_populates="inventory_item")
 
+    returns = relationship("SalesReturn", back_populates="inventory")
+
 
 class DailySale(Base):
     __tablename__ = "daily_sales"
@@ -92,6 +95,40 @@ class DailySale(Base):
 
     inventory_item = relationship("InventoryItem", back_populates="sales")
 
+    returns = relationship("SalesReturn", back_populates="sale")
+
+class SalesReturn(Base):
+    __tablename__ = "sales_returns"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    date = Column(String, index=True)
+
+    sale_id = Column(
+        Integer,
+        ForeignKey("daily_sales.id"),
+        nullable=False
+    )
+
+    inventory_id = Column(
+        Integer,
+        ForeignKey("inventory_items.id"),
+        nullable=False
+    )
+
+    quantity = Column(Integer, default=0)
+
+    refund_amount = Column(Float, default=0.0)
+
+    reason = Column(String, nullable=True)
+
+    owner_id = Column(Integer, ForeignKey("users.id"))
+
+    sale = relationship("DailySale", back_populates="returns")
+
+    inventory = relationship("InventoryItem", back_populates="returns")
+
+    owner = relationship("User")
 
 class DailyExpense(Base):
     __tablename__ = "daily_expenses"
