@@ -4,5 +4,6 @@ SQLAlchemy
 python-jose[cryptography]
 bcrypt
 python-multipart
+python-dateutil
 psycopg2-binary
 pydantic
