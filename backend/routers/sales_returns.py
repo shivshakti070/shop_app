@@ -55,13 +55,7 @@ def create_sales_return(
     # ----------------------------
     # Calculate already returned quantity
     # ----------------------------
-    already_returned = (
-        db.query(models.SalesReturn)
-        .filter(models.SalesReturn.sale_id == sale.id)
-        .all()
-    )
-
-    total_returned = sum(r.quantity for r in already_returned)
+    total_returned = sum(r.quantity for r in sale.returns)
 
     remaining_returnable = sale.quantity - total_returned
 
@@ -85,6 +79,24 @@ def create_sales_return(
 
     # Add stock back
     inventory.remaining_quantity += payload.quantity
+
+    return_sale = models.DailySale(
+        date=payload.date,
+        inventory_item_id=inventory.id,
+        item_name=inventory.item,
+        brand=inventory.brand,
+        quantity=-payload.quantity,
+        price_per_unit=sale.price_per_unit,
+        total_amount=-payload.refund_amount,
+        purchase_rate_at_sale=inventory.purchase_rate,
+        payment_method=f"RETURN ({sale.payment_method})",
+        customer_name=sale.customer_name,
+        owner_id=current_user.id
+    )
+
+    db.add(return_sale)
+    # If original sale was on Credit,
+    # reduce the outstanding credit amount.
 
     # DO NOT MODIFY THE ORIGINAL SALE
 

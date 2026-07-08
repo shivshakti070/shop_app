@@ -61,10 +61,19 @@ class DailySaleCreate(DailySaleBase):
     pass
 
 
-class DailySaleOut(DailySaleBase):
+class DailySaleOut(BaseModel):
     id: int
-
-    owner_id: int
+    date: str
+    inventory_item_id: int
+    item_name: str
+    brand: str
+    quantity: int
+    price_per_unit: float
+    total_amount: float
+    purchase_rate_at_sale: float
+    payment_method: str
+    customer_name: Optional[str]
+    is_return: bool = False
 
     class Config:
         from_attributes = True
@@ -75,7 +84,7 @@ class SalesReturnCreate(BaseModel):
     sale_id: int
     quantity: int
     refund_amount: float
-    reason: str | None = None
+    reason: Optional[str] = None
 
 
 class SalesReturnOut(SalesReturnCreate):
@@ -122,13 +131,18 @@ class InvestmentOut(InvestmentBase):
         from_attributes = True
 
 class SummaryOut(BaseModel):
-    total_inventory_investment: float
-    todays_sales: float
-    yesterdays_sales: float
-    total_profit: float
+    sales: float
+    net_sales: float
+    profit: float
+    loss: float
+    inventory_value: float
     cash_balance: float
     upi_balance: float
-    total_outstanding_credit: float
+    credit_due: float
+    expenses: float
+    investments: float
+    returns: float
+    credit_recovered: float
 
 class OneTimeExpenseBase(BaseModel):
     date: str

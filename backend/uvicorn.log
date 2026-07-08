@@ -1,0 +1,31 @@
+INFO:     Will watch for changes in these directories: ['/Users/shivshakti/Desktop/shop_app/backend']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [73080] using WatchFiles
+/Users/shivshakti/Desktop/shop_app/backend/routers/summary.py:150: FastAPIDeprecationWarning: `regex` has been deprecated, please use `pattern` instead
+  period: str = Query("daily", regex="^(daily|monthly|yearly|lifetime)$"),
+INFO:     Started server process [73129]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+/Users/shivshakti/Desktop/shop_app/backend/routers/auth.py:58: SAWarning: relationship 'SalesReturn.owner' will copy column users.id to column sales_returns.owner_id, which conflicts with relationship(s): 'User.returns' (copies users.id to sales_returns.owner_id). If this is not the intention, consider if these relationships should be linked with back_populates, or if viewonly=True should be applied to one or more if they are read-only. For the less common case that foreign key constraints are partially overlapping, the orm.foreign() annotation can be used to isolate the columns that should be written towards.   To silence this warning, add the parameter 'overlaps="returns"' to the 'SalesReturn.owner' relationship. (Background on this warning at: https://sqlalche.me/e/20/qzyx) (This warning originated from the `configure_mappers()` process, which was invoked automatically in response to a user-initiated operation.)
+  db_user = db.query(models.User).filter(models.User.username == user.username).first()
+INFO:     127.0.0.1:63295 - "POST /auth/signup HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63297 - "GET /summary/?period=daily HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63299 - "GET /summary/?period=monthly HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63301 - "GET /summary/?period=yearly HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63303 - "GET /summary/?period=lifetime HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'routers/summary.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [73129]
+INFO:     Started server process [73621]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'routers/summary.py', 'schemas.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [73621]
+INFO:     Started server process [73853]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
