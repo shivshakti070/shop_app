@@ -29,7 +29,7 @@ class OneTimeExpense(Base):
     amount = Column(Float, default=0.0)
     category = Column(String)
     payment_method = Column(String, default="Cash")
-    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner_id = Column(Integer, ForeignKey("users.id"), index=True)
 
     owner = relationship("User", back_populates="one_time_expenses")
 
@@ -70,7 +70,8 @@ class DailySale(Base):
     inventory_item_id = Column(
         Integer,
         ForeignKey("inventory_items.id"),
-        nullable=False
+        nullable=False,
+        index=True
     )
 
     item_name = Column(String)
@@ -89,7 +90,7 @@ class DailySale(Base):
 
     customer_name = Column(String, nullable=True)
 
-    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner_id = Column(Integer, ForeignKey("users.id"), index=True)
 
     owner = relationship("User", back_populates="sales")
 
@@ -128,7 +129,7 @@ class SalesReturn(Base):
 
     inventory = relationship("InventoryItem", back_populates="returns")
 
-    owner = relationship("User")
+    owner = relationship("User", overlaps="returns")
 
 class DailyExpense(Base):
     __tablename__ = "daily_expenses"
@@ -145,7 +146,7 @@ class DailyExpense(Base):
 
     payment_method = Column(String, default="Cash")
 
-    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner_id = Column(Integer, ForeignKey("users.id"), index=True)
 
     owner = relationship("User", back_populates="expenses")
 
@@ -165,6 +166,6 @@ class Investment(Base):
 
     payment_method = Column(String, default="Cash")
 
-    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner_id = Column(Integer, ForeignKey("users.id"), index=True)
 
     owner = relationship("User", back_populates="investments")
