@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
+import logging
+import traceback
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -151,4 +153,11 @@ def get_summary(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    return calculate_summary(current_user, db, period)
+    try:
+        return calculate_summary(current_user, db, period)
+    except Exception as exc:
+        # Log full traceback to server logs for debugging on Render
+        logging.exception("Error computing summary for user=%s period=%s", getattr(current_user, 'username', None), period)
+        traceback.print_exc()
+        # Surface a generic HTTP error to the client
+        raise HTTPException(status_code=500, detail="Internal Server Error")
