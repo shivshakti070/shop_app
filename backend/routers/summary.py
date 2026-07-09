@@ -69,13 +69,13 @@ def calculate_summary(current_user: models.User, db: Session, period: str = "dai
     # Fetch sales data
     sales = db.query(models.DailySale).filter(*sale_filter).all()
     
-    # Separate returns and regular sales
-    regular_sales = [s for s in sales if not s.is_return]
-    returns = [s for s in sales if s.is_return]
+    # Separate regular sales from return sales by payment_method marker
+    regular_sales = [s for s in sales if not (s.payment_method or '').startswith('RETURN')]
+    return_sales = [s for s in sales if (s.payment_method or '').startswith('RETURN')]
     
     # Calculate metrics
     sales_total = sum(s.total_amount for s in regular_sales)
-    returns_total = sum(s.total_amount for s in returns)
+    returns_total = -sum(s.total_amount for s in return_sales)
     net_sales = sales_total - returns_total
     
     # Calculate profit and loss
@@ -110,6 +110,15 @@ def calculate_summary(current_user: models.User, db: Session, period: str = "dai
         elif sale.payment_method == "UPI":
             upi_balance += amount
         elif sale.payment_method == "Credit":
+            credit_due += amount
+
+    for sale in return_sales:
+        amount = sale.total_amount
+        if "Cash" in sale.payment_method:
+            cash_balance += amount
+        elif "UPI" in sale.payment_method:
+            upi_balance += amount
+        elif "Credit" in sale.payment_method:
             credit_due += amount
     
     # Add investment amounts
